@@ -12,14 +12,17 @@ def decomp(x):
 def f(nbCells, nbAtomesCells):
    return decomp(nbCells) + decomp(nbAtomesCells)
 
-def affiche(nbCellsLin, nbCellsCol, nbColsCell, nbLinsCell):
+def affiche(nbCellsLin, nbCellsCol, nbColsCell, nbLinsCell, t = None):
    for i in range(nbCellsLin*nbLinsCell):
-      if i % nbLinsCell == 0:
+      if i > 0 and i % nbLinsCell == 0:
          print("")
       for j in range(nbCellsCol*nbColsCell):
-         if j % nbColsCell == 0:
+         if j > 0 and j % nbColsCell == 0:
             print(" ", end="")
-         print("x", end="")
+         if t is None:
+            print("x", end="")
+         else:
+            print(t[i][j], end="")
       print("")
 
 def main():
