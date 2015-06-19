@@ -19,12 +19,12 @@ def affiche(nbCellsLin, nbCellsCol, nbColsCell, nbLinsCell, t = None):
       for j in range(nbCellsCol*nbColsCell):
          if j > 0 and j % nbColsCell == 0:
             print(" ", end="")
-         if t is None:
-            print("x", end="")
-         else:
-            print(t[i][j], end="")
+         print("x" if t is None else t[i][j], end="")
       print("")
 
+def afficheMat(nbColsCell, nbLinsCell, t):
+   affiche(len(t)//nbLinsCell, len(t[0])//nbColsCell, nbColsCell, nbLinsCell, t);
+   
 def main():
    nbCells = int(input())
    nbAtomesCells = int(input())

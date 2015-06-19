@@ -1,10 +1,10 @@
 from random import *
-from taille import f, affiche
+from taille import f, afficheMat
 
 def rand(n):
    return int(random() * n)
 
-def genereDimensions():
+def genereDims():
    NB_CELLS_MAX = 10
    NB_ATOMES_CELLS_MAX = 30
    nbCellsLin, nbCellsCol, nbColsCell, nbLinsCell = (1, 1, 1, 1)
@@ -14,12 +14,16 @@ def genereDimensions():
       nbCellsLin, nbCellsCol, nbColsCell, nbLinsCell = f(nbCells, nbAtomesCell)
    return nbCellsLin, nbCellsCol, nbColsCell, nbLinsCell
 
-nbCellsLin, nbCellsCol, nbColsCell, nbLinsCell = genereDimensions()
-nbLin = nbCellsLin * nbLinsCell
-nbCol = nbCellsCol * nbColsCell
-t = [[0] * nbCol for _ in range(nbLin)]
-n = rand(nbLin * nbCol)
-for _ in range(n):
-   t[rand(nbLin)][rand(nbCol)] = 1
-#affiche(2, 2, 1, 1, [[0, 1], [1, 0]])
-affiche(nbCellsLin, nbCellsCol, nbColsCell, nbLinsCell, t)
+def genereMat(nbCellsLin, nbCellsCol, nbColsCell, nbLinsCell):
+   nbLin = nbCellsLin * nbLinsCell
+   nbCol = nbCellsCol * nbColsCell
+   t = [[0] * nbCol for _ in range(nbLin)]
+   for _ in range(rand(1.5 * nbLin * nbCol)):
+      t[rand(nbLin)][rand(nbCol)] = 1
+   return t
+   
+def main():
+   #affiche(2, 2, 1, 1, [[0, 1], [1, 0]])
+   nbCellsLin, nbCellsCol, nbColsCell, nbLinsCell = genereDims()
+   t = genereMat(nbCellsLin, nbCellsCol, nbColsCell, nbLinsCell)
+   afficheMat(nbColsCell, nbLinsCell, t)
