@@ -16,43 +16,46 @@ class GridView(QGraphicsView):
     """
         Class that handles the GraphicsView Widget used to draw the grid.
     """
-    def __init__(self,parent,scene,client=None):
+    def __init__(self,settings,parent,scene,client=None):
         QGraphicsView.__init__(self,parent)
         self.scene = scene
+        self.settings = settings
         self.client = client
         self.setScene(scene)
-        self.setGeometry(QtCore.QRect(10, 10,Settings.gridWidth,Settings.gridHeight)) # 571 581 for width and height.
+        self.setGeometry(QtCore.QRect(10, 10,settings.gridWidth,settings.gridHeight)) # 571 581 for width and height.
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        
-    def changeState(self,item):
-        item.state = 1 - item.state
-        if item.state == 1:
-            item.setBrush(QBrush(Qt.black))
+            
+    def changeAtom(self,i,j):
+        print("Change Atom called: " + str(i) + " " + str(j))
+        atom = self.scene.grid.matrix[i][j]
+        atom.state = 1 - atom.state
+        if atom.state == 1:
+            atom.setBrush(QBrush(Qt.black))
         else:
-            item.setBrush(QBrush(Qt.white))
-        self.currentAtom = item
-        self.client.change(item.i,item.j)
+            atom.setBrush(QBrush(Qt.white))
                 
     def mousePressEvent(self,event):
         pos = event.pos()
         item = self.itemAt(pos)
-        if item is not None:
-            self.changeState(item)
+        if item is not None and self.client is not None:
+            if self.client.cellI == item.i // self.settings.cellHeightInAtoms and self.client.cellJ == item.j // self.settings.cellWidthInAtoms:
+                self.currentAtom = item
+                self.client.change(item.i,item.j)
             
     def mouseMoveEvent(self,event):
         pos = event.pos()
         item = self.itemAt(pos)
-        if item is not None:
-            if item != self.currentAtom:
-                self.changeState(item)
+        if item is not None and self.client is not None:
+            if self.client.cellI == item.i // self.settings.cellHeightInAtoms and self.client.cellJ == item.j // self.settings.cellWidthInAtoms:
+                if item != self.currentAtom:
+                    self.currentAtom = item
+                    self.client.change(item.i,item.j)
                 
     def drawGrid(self):
-        for i in range(Settings.n):
-            for j in range(Settings.m):
-                #atom = self.grid.matrix[i][j]
-                #print(str(Settings.atomWidth) + " " + str(Settings.atomHeight) + " ")
-                #self.addRect(atom.i+1,atom.j+1,Settings.atomWidth,Settings.atomHeight)
+        self.scene.reset()     
+        for i in range(self.settings.n):
+            for j in range(self.settings.m):
                 self.scene.addItem(self.scene.grid.matrix[i][j])
         self.show()
         
@@ -61,9 +64,14 @@ class GridArea(QGraphicsScene):
     """
         Class used to draw the grid in a GridView.
     """
-    def __init__(self,grid):
+    def __init__(self,settings,grid):
         self.grid = grid
-        QGraphicsScene.__init__(self,0,0,Settings.gridWidth,Settings.gridHeight)
+        QGraphicsScene.__init__(self,0,0,settings.gridWidth,settings.gridHeight)
+    
+    def reset(self):
+        print("reset function called")
+        self.clear()
+        self.grid.createGrid()
 
         
         

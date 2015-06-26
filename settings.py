@@ -9,9 +9,15 @@ class Settings:
     """
         Contains all constant used throughout the project.
     """
-    
-    nbAtomsPerCell = 4
-    nbPlayers = 9
+    def __init__(self):
+        self.nbAtomsPerCell = 4
+        self.nbPlayers = 1
+        self.gridWidth = 571
+        self.gridHeight = 581
+        self.atomMargin = 4
+        self.cellMargin = 8
+        self.update(self.nbPlayers)
+        
     
     def decomp(self,x):
         b = 1
@@ -22,31 +28,24 @@ class Settings:
             i += 1
         return b, x//b
 
-#    def f(self):
-#        return self.decomp(nbPlayers) + self.decomp(nbAtomsPerCell)
+    def update(self,nbPlayers):
+        if nbPlayers == 0:
+            nbPlayers = 1
+        self.nbPlayers = nbPlayers
+        self.cellWidthInAtoms = self.decomp(self.nbAtomsPerCell)[1]
+        self.cellHeightInAtoms = self.decomp(self.nbAtomsPerCell)[0]
+        self.gridWidthInCells = self.decomp(nbPlayers)[1]
+        self.gridHeightInCells = self.decomp(nbPlayers)[0]
+        print("Settings updated : nbPlayers = " + str(self.nbPlayers))
+        print("\t New dimensions : " + str(self.cellWidthInAtoms) + " " + str(self.cellHeightInAtoms) + " " + str(self.gridWidthInCells) + " " + str(self.gridHeightInCells))
         
+        self.n = self.cellHeightInAtoms*self.gridHeightInCells  # matrix of atoms, dimensions
+        self.m = self.cellWidthInAtoms*self.gridWidthInCells
+        
+        self.atomWidth = (self.gridWidth - (self.m-1)*self.atomMargin - (self.gridWidthInCells-1)*self.cellMargin) // self.m
+        self.atomHeight = (self.gridHeight - (self.n-1)*self.atomMargin - (self.gridHeightInCells-1)*self.cellMargin) // self.n
+        
+        self.edgeLeftMargin = (self.gridWidth - (self.atomWidth+self.atomMargin)*self.m + self.atomMargin - (self.gridWidthInCells-1)*self.cellMargin ) // 2
+        self.edgeTopMargin = (self.gridHeight - (self.atomHeight+self.atomMargin)*self.n + self.atomMargin - (self.gridHeightInCells-1)*self.cellMargin ) // 2
     
-    gridWidth = 571
-    gridHeight = 581
-    
-#    decomposition = f(nbPlayers,nbAtomsPerCell)
-
-#    cellWidthInAtoms = decomp(nbAtomsPerCell)[1]
-#    cellHeightInAtoms = decomp(nbAtomsPerCell)[0]
-#    gridWidthInCells = decomp(nbPlayers)[1]
-#    gridHeightInCells = decomp(nbPlayers)[0]
-
-    cellWidthInAtoms = 2
-    cellHeightInAtoms = 2
-    gridWidthInCells = 3
-    gridHeightInCells = 3
-    
-    n,m = cellHeightInAtoms*gridHeightInCells, cellWidthInAtoms*gridWidthInCells  # matrix of atoms, dimensions
-    
-    atomMargin = 4
-    cellMargin = 8
-    atomWidth = (gridWidth - (m-1)*atomMargin - (gridWidthInCells-1)*cellMargin) // m
-    atomHeight = (gridHeight - (n-1)*atomMargin - (gridHeightInCells-1)*cellMargin) // n
-    
-    edgeLeftMargin = (gridWidth - (atomWidth+atomMargin)*m + atomMargin - (gridWidthInCells-1)*cellMargin ) // 2
-    edgeTopMargin = (gridHeight - (atomHeight+atomMargin)*n + atomMargin - (gridHeightInCells-1)*cellMargin ) // 2
+ 

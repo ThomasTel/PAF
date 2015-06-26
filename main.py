@@ -9,6 +9,8 @@
 from PyQt4 import QtCore, QtGui
 from drawArea import GridArea, GridView
 from elements import Grid
+from server import Server
+from settings import Settings
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -32,12 +34,13 @@ class Ui_MainWindow(object):
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         
-        self.drawButton = QtGui.QPushButton(self.centralwidget)
-        self.drawButton.setGeometry(QtCore.QRect(590, 10, 201, 61))
-        self.drawButton.setObjectName(_fromUtf8("drawButton"))
-        self.pushButton = QtGui.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(590, 80, 201, 61))
-        self.pushButton.setObjectName(_fromUtf8("pushButton"))
+        self.startButton = QtGui.QPushButton(self.centralwidget)
+        self.startButton.setGeometry(QtCore.QRect(590, 10, 201, 61))
+        self.startButton.setObjectName(_fromUtf8("startButton"))
+        
+        self.aiButton = QtGui.QPushButton(self.centralwidget)
+        self.aiButton.setGeometry(QtCore.QRect(590, 80, 201, 61))
+        self.aiButton.setObjectName(_fromUtf8("aiButton"))
         
         self.spinHeight = QtGui.QSpinBox(self.centralwidget)
         self.spinHeight.setGeometry(QtCore.QRect(700, 150, 91, 22))
@@ -46,22 +49,26 @@ class Ui_MainWindow(object):
         self.spinWidth = QtGui.QSpinBox(self.centralwidget)
         self.spinWidth.setGeometry(QtCore.QRect(590, 150, 91, 22))
         self.spinWidth.setObjectName(_fromUtf8("spinWidth"))
-        
-        self.grid = Grid()
-        self.gridArea = GridArea(self.grid)
-        self.gridView = GridView(self.centralwidget,self.gridArea)
+                        
+        self.settings = Settings()
+        self.server = Server(self.settings,self)
+        self.grid = Grid(self.settings)
+        self.gridArea = GridArea(self.settings,self.grid)
+        self.gridView = GridView(self.settings,self.centralwidget,self.gridArea)
 
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        QtCore.QObject.connect(self.drawButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.gridView.drawGrid)
+        QtCore.QObject.connect(self.startButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.server.start)
+        QtCore.QObject.connect(self.aiButton, QtCore.SIGNAL("clicked()"), self.server.addAI)
+        QtCore.QObject.connect(self.server, QtCore.SIGNAL("redraw"), self.gridView.drawGrid)
+        QtCore.QObject.connect(self.server, QtCore.SIGNAL(_fromUtf8("change")), self.gridView.changeAtom)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.drawButton.setText(_translate("MainWindow", "Initialize Cells", None))
-        self.pushButton.setText(_translate("MainWindow", "Reset", None))
-        
+        self.aiButton.setText(_translate("MainWindow", "Add AI", None))        
+        self.startButton.setText(_translate("MainWindow", "Start Server Thread", None))                
     
 
 if __name__ == "__main__":
